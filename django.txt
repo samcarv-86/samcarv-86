@@ -1,27 +1,126 @@
 0) Atualizar o pip
 python.exe -m pip install --upgrade pip
 
+
 1) Instalar o django
 pip install django
+
 
 2) Instalar o pillow
 pip install pillow
 
+
 3) Criar o projeto django
 django-admin startproject <nome_projeto> .
+
 
 4)Testar o django instalado / colocar o site no ar
 python manage.py runserver
 
+
 5) Criar um app do site
 django-admin startapp <nome_app>
 
-6) Quando fizer modificação no BD do site rodar estes comandos
+
+6) Instalar o app
+   * Entra em 'settings.py'
+   * No código deste arquivo, buscar por INSTALLED_APPS
+   * Acrescenta uma linha com o mesmo nome do app criado
+
+
+7) Trocar o idioma e o fuso
+   * LANGUAGE_CODE = 'pt-br'
+   * TIME_ZONE = America/Sao_Paulo
+
+8) Rodar estes comandos
 python manage.py makemigrations
 python manage.py migrate
 
-7) Criar um superusuário (admin) do site
+
+9) Criar um superusuário (admin) do site
 python manage.py createsuperuser
+
+
+10) Cria o modelo em models.py
+   * pode ser útil: from django.utils import timezone
+   * ao final da classe incluir a seguinte função
+       
+def __str__(self):
+	return self.nome
+
+
+11) Colocar o modelo dentro de admin.py
+from .models import <nome_da_classe_criada>
+.
+.
+.
+admin.site.register(<nome_da_classe_criada>)
+
+
+10) Testar o modelo criado (ainda não inserir nada!)
+python manage.py runserver
+
+
+11) Cria um arquivo chamado 'urls.py' (dentro da pasta do app)
+
+
+12) Edita o arquivo urls.py (dentro da pasta do projeto), inserindo:
+from django.conf import settings
+from django.conf.urls.static import static
+
+path('', include('nome_do_app.urls'))
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+13) Acrescentar no settings.py
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+14) Cria uma pasta static na raiz, contendo 3 pastas (images, css e js)
+
+15) Cria uma pasta media na raiz, contendo uma pasta thumbs
+
+16) Adiciona o nome templates ao settings.py
+
+17) Cria uma pasta templates na raiz, contendo navbar.html e base.html
+
+18) Cria uma pasta templates dentro da pasta do app, contendo as paginas do app
+
+19) Cria as urls do app dentro do arquivo urls.py
+from django.urls import path
+from .views import HomePredios, HomeSGPRS, DetalhesPredio
+
+app_name = 'predio'
+
+urlpatterns = [
+    path('', HomeSGPRS.as_view(), name='homesgprs'),
+    path('predios/', HomePredios.as_view(), name='homepredios'),
+    path('predios/<int:pk>', DetalhesPredio.as_view(), name='detalhespredio')
+]
+
+20) Cria as views do app, dentro de views.py
+from django.shortcuts import render
+from .models import Predio
+from django.views.generic import TemplateView, ListView, DetailView
+
+class HomeSGPRS(TemplateView):
+    template_name = "home_sgprs.html"
+
+class HomePredios(ListView):
+    template_name = "home_predios.html"
+    model = Predio
+
+class DetalhesPredio(DetailView):
+    template_name = "detalhes_predio.html"
+    model = Predio
 
 8) Para instalar um app dentro do site
 Entra em 'settings.py' (dentro da pasta do projeto)
